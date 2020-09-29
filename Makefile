@@ -25,18 +25,18 @@ dev: secret.txt
 create-ecr:
 	aws ecr create-repository --repository-name ${FRONTEND_IMG}
 
-build-image:
+build:
 	docker --context default build -t $(REGISTRY_ID).$(DOCKER_PUSH_REPOSITORY)/$(FRONTEND_IMG) ./app
 	docker --context default build -t $(FRONTEND_IMG) ./app
 
-push-image-ecr:
+push-ecr:
 	aws ecr get-login-password --region us-west-2 | docker login -u AWS --password-stdin $(REGISTRY_ID).$(DOCKER_PUSH_REPOSITORY)
 	docker --context default push $(REGISTRY_ID).$(DOCKER_PUSH_REPOSITORY)/$(FRONTEND_IMG)
 
-push-image-hub:
+push-hub:
 	docker --context default push $(FRONTEND_IMG)
 
-deploy: secret.txt push-image-hub
+deploy: secret.txt push-hub
 	docker --context ecs compose up
 
 convert:
