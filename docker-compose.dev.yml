@@ -1,0 +1,16 @@
+version: "3.8"
+services:
+  frontend:
+    build: app
+    environment:
+      - FLASK_ENV=development
+    volumes:
+      - "${PWD}/app:/app"
+
+
+  backend:
+    volumes:
+      - "redis:/data"
+
+volumes:
+  redis:

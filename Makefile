@@ -20,7 +20,7 @@ DOCKER_PUSH_REPOSITORY=dkr.ecr.us-west-2.amazonaws.com
 .PHONY: dev
 all: dev
 dev: secret.txt
-	@COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f docker-compose.yml up --build
+	@COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 create-ecr:
 	aws ecr create-repository --repository-name ${FRONTEND_IMG}
