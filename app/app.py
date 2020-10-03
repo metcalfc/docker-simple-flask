@@ -8,7 +8,7 @@ if os.path.exists("/run/secrets/db_password"):
     with open("/run/secrets/db_password", "r") as secret:
         db_password = secret.readline().strip()
 
-print (db_password)
+print ("Not ideal to print secrets:" + db_password)
 
 app = Flask(__name__)
 redis = StrictRedis(host='backend', port=6379, password=db_password)
