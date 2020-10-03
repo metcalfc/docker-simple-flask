@@ -8,6 +8,7 @@ ifeq ($(GIT_TAG),)
 	GIT_TAG=latest
 endif
 
+HUB_PULL_SECRET ?= arn:aws:secretsmanager:us-west-2:175142243308:secret:DockerHubAccessToken-8cRLae
 FRONTEND_IMG = metcalfc/timestamper:${GIT_TAG}
 REGISTRY_ID ?= 175142243308
 DOCKER_PUSH_REPOSITORY=dkr.ecr.us-west-2.amazonaws.com
@@ -20,7 +21,7 @@ DOCKER_PUSH_REPOSITORY=dkr.ecr.us-west-2.amazonaws.com
 .PHONY: dev
 all: dev
 dev: secret.txt
-	@COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
+	COMPOSE_DOCKER_CLI_BUILD=1 docker-compose -f docker-compose.yml -f docker-compose.dev.yml up --build
 
 create-ecr:
 	aws ecr create-repository --repository-name ${FRONTEND_IMG}
@@ -37,11 +38,11 @@ push-hub:
 	docker --context default push $(FRONTEND_IMG)
 
 deploy: secret.txt push-hub
-	docker --context ecs compose up
+	HUB_PULL_SECRET=$(HUB_PULL_SECRET) FRONTEND_IMG=$(FRONTEND_IMG) docker --context ecs compose -f docker-compose.yml -f docker-compose.prod.yml up
 
 convert:
 	docker --context ecs compose convert
 
 clean:
-	@docker-compose rm -f || true
-	@docker rmi ${FRONTEND_IMG}
+	docker-compose rm -f || true
+	docker rmi ${FRONTEND_IMG}
